@@ -1,0 +1,27 @@
+plugins {
+    id 'java-library'
+}
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    implementation 'com.google.http-client:google-http-client:1.35.0'
+    implementation 'com.google.http-client:google-http-client-jackson2:1.35.0'
+
+    testImplementation 'junit:junit:4.13'
+}
+
+jar {
+    manifest {
+        attributes('Implementation-Title': project.name,
+                'Implementation-Version': project.version)
+    }
+}
+
+version = '0.1.0'
+
+
+
+
