@@ -1,15 +1,14 @@
 buildscript {
     repositories {
-        mavenLocal()
-        mavenCentral()
         jcenter()
+    }
+    dependencies {
+        classpath 'com.novoda:bintray-release:0.9.2'
     }
 }
 
 plugins {
-    id "com.jfrog.bintray" version "1.7.3"
-    id "maven-publish"
-    id "java"
+    id 'java-library'
 }
 
 repositories {
@@ -23,93 +22,12 @@ dependencies {
     testImplementation 'junit:junit:4.13'
 }
 
-jar {
-    manifest {
-        attributes('Implementation-Title': project.name,
-                'Implementation-Version': project.version)
-    }
+apply plugin: 'com.novoda.bintray-release'
+publish {
+    userOrg = 'tiwa42'
+    groupId = 'de.tiwa'
+    artifactId = 'snclient'
+    publishVersion = '0.1.1'
+    desc = 'first published version of standardnotes java client'
+    website = 'https://gitlab.com/tiwa42/sn-java-client/'
 }
-
-
-
-version = '0.1.1'
-
-
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-javadoc.failOnError = false
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-artifacts {
-    archives sourcesJar
-    archives javadocJar
-}
-
-def pomConfig = {
-    licenses {
-        license {
-            name "GNU AFFERO GENERAL PUBLIC LICENSE, Version 3"
-            url "https://www.gnu.org/licenses/agpl-3.0.txt"
-            distribution "repo"
-        }
-    }
-    developers {
-        developer {
-            id "tiwa42"
-            name "tiwa42"
-        }
-    }
-
-    scm {
-        url "https://gitlab.com/tiwa42/sn-java-client.git"
-    }
-}
-
-publishing {
-    publications {
-        mavenPublication(MavenPublication) {
-            from components.java
-            artifact sourcesJar {
-                classifier "sources"
-            }
-            artifact javadocJar {
-                classifier "javadoc"
-            }
-            groupId 'de.tiwa.snclient'
-            artifactId 'snclient'
-            version '0.1.1'
-            pom.withXml {
-                def root = asNode()
-                root.appendNode('name', 'snclient')
-                root.appendNode('url', 'https://gitlab.com/tiwa42/sn-java-client')
-                root.children().last() + pomConfig
-            }
-        }
-    }
-}
-
-bintray {
-    user = System.getProperty('bintray.user')
-    key = System.getProperty('bintray.key')
-    publications = ['mavenPublication']
-
-    pkg {
-        repo = 'maven'
-        name = 'snclient'
-        licenses = ['AGPL-V3']
-        vcsUrl = 'https://gitlab.com/tiwa42/sn-java-client.git'
-        version {
-            name = '0.1.1'
-            desc = '0.1.1'
-            released  = new Date()
-        }
-    }
-}
-
-
